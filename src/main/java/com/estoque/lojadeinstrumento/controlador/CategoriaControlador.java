@@ -3,6 +3,8 @@ package com.estoque.lojadeinstrumento.controlador;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,14 +34,16 @@ public class CategoriaControlador {
 	}
 
 	@GetMapping("/{codigo}")
-	public Categoria BuscarPeloId(@PathVariable Long codigo){
+	public ResponseEntity<Optional<Categoria>> BuscarPeloId(@PathVariable Long codigo){
 		
-		return categoriaServico.BuscarPeloId(codigo);
+		Optional<Categoria> categoria = categoriaServico.BuscarPeloId(codigo);
+		
+		return categoria.isPresent() ? ResponseEntity.ok(categoria) : ResponseEntity.notFound().build();
 		
 	}
 	
 	@PostMapping
-	public ResponseEntity<Categoria> Salvar(@RequestBody Categoria categoria) {
+	public ResponseEntity<Categoria> Salvar(@Valid @RequestBody Categoria categoria) {
 
 		Categoria salvarCategoria = categoriaServico.Salvar(categoria);
 
@@ -47,9 +51,9 @@ public class CategoriaControlador {
 
 	}
 	
-	@PutMapping
-	public ResponseEntity<Categoria> Alterar(@RequestBody Categoria categoria){
+	@PutMapping("/{codigo}")
+	public ResponseEntity<Categoria> Alterar(@PathVariable Long codigo,@Valid @RequestBody Categoria categoria){
 		
-		return ResponseEntity.ok(categoriaServico.Alterar(categoria));
+		return ResponseEntity.ok(categoriaServico.Alterar(codigo ,categoria));
 	}
 }
